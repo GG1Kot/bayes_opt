@@ -1,0 +1,24 @@
+[MASTER]
+ignore=__pycache__
+ignore-patterns=test_.*?py
+
+[MESSAGES CONTROL]
+# Отключаем warnings, которые не критичны для нашего проекта
+disable=
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    R0903,  # too-few-public-methods
+    R0801,  # duplicate-code
+    R0913,  # too-many-arguments
+
+[FORMAT]
+max-line-length=88
+
+[BASIC]
+good-names=i,j,k,x,y,z,_,f,df,ax,id
+
+[DESIGN]
+max-args=10
+max-locals=20
+max-attributes=15
