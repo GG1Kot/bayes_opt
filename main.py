@@ -9,6 +9,8 @@
 Дата: 2026
 """
 
+import warnings
+
 from src.utils import experiment
 from src.utils import visualization
 
@@ -26,6 +28,10 @@ def main() -> None:
         - Количество запусков: 2
         - Итераций на запуск: 20
     """
+    # Подавляем предупреждения GP о границах гиперпараметров —
+    # они информационные и не влияют на результат
+    warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
+
     print("=" * 80)
     print("ЗАПУСК ЭКСПЕРИМЕНТА ПО БАЙЕСОВСКОЙ ОПТИМИЗАЦИИ")
     print("=" * 80)
@@ -45,13 +51,13 @@ def main() -> None:
         print("Нет результатов для визуализации.")
         return
 
-    # Общий интегральный график: сходимость 4 методов по всем задачам и размерностям
+    # Общий интегральный график: 4 метода, усреднение по всем задачам и размерностям
     visualization.plot_integral_convergence(
         all_results,
         save_path="results/plots/integral_convergence.png",
     )
 
-    # Детальные графики: отдельно по каждой задаче (subplot на размерность)
+    # Детальные графики: отдельно по каждой задаче, subplot на каждую размерность
     problems = sorted({r.function_name for r in all_results})
     for problem in problems:
         prob_results = [r for r in all_results if r.function_name == problem]
