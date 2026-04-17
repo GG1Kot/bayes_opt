@@ -1,49 +1,68 @@
 #!/usr/bin/env python3
 """
-Главный модуль для запуска эксперимента по байесовской оптимизации.
+Запуск сравнительного эксперимента по байесовской оптимизации.
 
-Запускает сравнительное тестирование 4 методов (Penalty, Barrier, Lagrange, CEI)
-на BBOB-constrained задачах (первые 6 функций Sphere) с размерностями 2,3,5.
+Тестирует 4 метода учёта ограничений (Penalty, Barrier, Lagrange, CEI)
+на наборе задач с ограничениями с размерностями 2, 3, 5.
 
 Автор: Elizaveta Surda
 Дата: 2026
 """
 
-import sys
-from pathlib import Path
-import warnings
+from src.utils import experiment
+from src.utils import visualization
 
-warnings.filterwarnings("ignore")
-
-sys.path.insert(0, str(Path(__file__).parent))
-
-from src.utils.experiment import run_comprehensive_experiment
+DIMENSIONS = [2, 3, 5]
 
 
-def main():
+def main() -> None:
     """
-    Запуск эксперимента.
-    
+    Запуск сравнительного эксперимента.
+
     Конфигурация:
-        - Размерности: 2, 3, 5 (доступные в BBOB)
-        - Задачи: Sphere (6 вариантов ограничений)
+        - Размерности: 2, 3, 5
+        - Задачи: Sphere, Rosenbrock, Ackley, Rastrigin, Michalewicz
         - Методы: Penalty, Barrier, Lagrange, CEI
         - Количество запусков: 2
-        - Итераций: 20
+        - Итераций на запуск: 20
     """
-    print("="*80)
+    print("=" * 80)
     print("ЗАПУСК ЭКСПЕРИМЕНТА ПО БАЙЕСОВСКОЙ ОПТИМИЗАЦИИ")
-    print("="*80)
-    
-    results = run_comprehensive_experiment(
-        dimensions=[2, 3, 5],
+    print("=" * 80)
+
+    results = experiment.run_comprehensive_experiment(
+        dimensions=DIMENSIONS,
         n_runs=2,
         n_iterations=20,
-        n_initial_points_factor=5
+        n_initial_points_factor=5,
     )
-    
+
     print(f"\nГотово. Выполнено запусков: {results['n_total']}")
-    print("="*80)
+    print("=" * 80)
+
+    all_results = results["results"]
+    if not all_results:
+        print("Нет результатов для визуализации.")
+        return
+
+    # Общий интегральный график: сходимость 4 методов по всем задачам и размерностям
+    visualization.plot_integral_convergence(
+        all_results,
+        save_path="results/plots/integral_convergence.png",
+    )
+
+    # Детальные графики: отдельно по каждой задаче (subplot на размерность)
+    problems = sorted({r.function_name for r in all_results})
+    for problem in problems:
+        prob_results = [r for r in all_results if r.function_name == problem]
+        visualization.plot_convergence_by_dimension(
+            prob_results,
+            dimensions=DIMENSIONS,
+            problem_name=problem,
+        )
+
+    # Сводная таблица
+    visualization.save_summary_table(all_results)
 
 
 if __name__ == "__main__":
