@@ -1,103 +1,95 @@
 """
-Метод штрафных функций для учета ограничений.
+Метод штрафных функций для учёта ограничений.
 
-Реализует внешнюю штрафную функцию вида:
-    F(x) = f(x) + ρ * Σ max(0, g_i(x))
-
-где ρ - коэффициент штрафа. Чем больше ρ, тем точнее соблюдаются ограничения.
+F(x) = f(x) + ρ * Σ max(0, g_i(x))
 
 Автор: Elizaveta Surda
 Дата: 2026
 """
 
+from collections.abc import Callable
+
 import numpy as np
-from typing import List, Callable
-from src.bayesian_optimization.base import ConstraintHandler
+
+from src.bayesian_optimization import base
 
 
-class PenaltyMethod(ConstraintHandler):
+class PenaltyMethod(base.ConstraintHandler):
     """
     Метод внешних штрафных функций.
-    
-    Преобразует задачу с ограничениями в задачу безусловной оптимизации
-    путем добавления штрафа за нарушение ограничений.
-    
-    Параметры:
-        constraint_functions: список функций ограничений g_i(x) <= 0
-        penalty_coeff: коэффициент штрафа ρ (по умолчанию 100.0)
-    
-    Пример:
-        >>> constraints = [lambda x: x[0] + x[1] - 1]
-        >>> handler = PenaltyMethod(constraints, penalty_coeff=100.0)
+
+    Атрибуты:
+        constraint_functions: список функций g_i(x) <= 0
+        penalty_coeff: коэффициент штрафа ρ
     """
-    
-    def __init__(self, constraint_functions: List[Callable], penalty_coeff: float = 100.0):
+
+    def __init__(
+        self,
+        constraint_functions: list[Callable[[np.ndarray], float]],
+        penalty_coeff: float = 100.0,
+    ) -> None:
         """
-        Инициализация метода штрафных функций.
-        
-        Параметры:
-            constraint_functions: список функций ограничений
-            penalty_coeff: коэффициент штрафа
+        Инициализация.
+
+        Аргументы:
+            constraint_functions: список функций ограничений g_i(x) <= 0
+            penalty_coeff: коэффициент штрафа ρ
         """
         self.constraint_functions = constraint_functions
         self.penalty_coeff = penalty_coeff
-    
+
     def evaluate_constraints(self, X: np.ndarray) -> np.ndarray:
         """
-        Вычисление суммарного нарушения ограничений.
-        
-        Параметры:
-            X: точки для оценки, форма (n_points, n_dims)
-            
+        Суммарное нарушение ограничений.
+
+        Аргументы:
+            X: точки, форма (n_points, n_dims)
+
         Возвращает:
-            violations: массив нарушений, форма (n_points,)
+            violations: форма (n_points,)
         """
         X = np.atleast_2d(X)
         violations = np.zeros(len(X))
         for constraint in self.constraint_functions:
-            constraint_values = np.array([constraint(x) for x in X])
-            violations += np.maximum(0, constraint_values)
+            g_vals = np.array([constraint(x) for x in X])
+            violations += np.maximum(0.0, g_vals)
         return violations
-    
-    def compute_penalized_objective(self, X: np.ndarray, f_values: np.ndarray) -> np.ndarray:
+
+    def compute_penalized_objective(
+        self, X: np.ndarray, f_values: np.ndarray
+    ) -> np.ndarray:
         """
-        Вычисление штрафованной целевой функции.
-        
         F(x) = f(x) + ρ * Σ max(0, g_i(x))
-        
-        Параметры:
+
+        Аргументы:
             X: точки, форма (n_points, n_dims)
-            f_values: значения целевой функции, форма (n_points,)
-            
+            f_values: значения целевой функции
+
         Возвращает:
-            penalized: значения штрафованной функции
+            penalized: штрафованные значения
         """
-        violations = self.evaluate_constraints(X)
-        return f_values + self.penalty_coeff * violations
-    
+        return f_values + self.penalty_coeff * self.evaluate_constraints(X)
+
     def get_acquisition_weights(self, X: np.ndarray) -> np.ndarray:
         """
-        Получение весов для acquisition функции.
-        
-        Веса обратно пропорциональны нарушению ограничений.
-        
-        Параметры:
-            X: точки для оценки, форма (n_points, n_dims)
-            
+        Экспоненциальное затухание при нарушении ограничений.
+
+        Аргументы:
+            X: точки, форма (n_points, n_dims)
+
         Возвращает:
-            weights: веса в диапазоне [0, 1]
+            weights: веса в [0, 1]
         """
-        violations = self.evaluate_constraints(X)
-        return np.exp(-self.penalty_coeff * violations)
-    
+        return np.exp(-self.penalty_coeff * self.evaluate_constraints(X))
+
     def is_feasible(self, X: np.ndarray, tolerance: float = 1e-6) -> np.ndarray:
         """
-        Проверка допустимости точек.
-        
-        Параметры:
-            X: точки для проверки
+        Проверка допустимости.
+
+        Аргументы:
+            X: точки, форма (n_points, n_dims)
             tolerance: допуск на нарушение
-            
+
         Возвращает:
             feasible: булев массив
         """

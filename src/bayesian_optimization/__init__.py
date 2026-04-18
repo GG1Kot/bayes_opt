@@ -1,32 +1,17 @@
 """
-Модуль с ядром байесовской оптимизации.
+Ядро байесовской оптимизации с ограничениями.
 
-Содержит базовый оптимизатор и различные методы обработки ограничений:
-- Barrier method (барьерный метод)
-- Lagrange method (метод множителей Лагранжа)
-- Penalty method (метод штрафных функций)
-- CEI (Constrained Expected Improvement)
-
-Пример использования:
-    from core import BayesianOptimizer, PenaltyMethod
-    
-    optimizer = BayesianOptimizer(
-        objective_function=func,
-        bounds=bounds,
-        constraint_handler=PenaltyMethod(penalty_coeff=100)
-    )
+Методы учёта ограничений:
+    barrier: барьерный метод (логарифмические барьеры)
+    lagrange: Augmented Lagrangian
+    penalty: метод штрафных функций
+    cei: Constrained Expected Improvement
 """
 
-from .base import BayesianOptimizer
-from .barrier import BarrierMethod
-from .lagrange import LagrangeMethod
-from .penalty import PenaltyMethod
-from .cei import ConstrainedExpectedImprovement
+from src.bayesian_optimization import barrier
+from src.bayesian_optimization import base
+from src.bayesian_optimization import cei
+from src.bayesian_optimization import lagrange
+from src.bayesian_optimization import penalty
 
-__all__ = [
-    'BayesianOptimizer',
-    'BarrierMethod',
-    'LagrangeMethod',
-    'PenaltyMethod',
-    'ConstrainedExpectedImprovement',
-]
+__all__ = ["barrier", "base", "cei", "lagrange", "penalty"]

@@ -1,10 +1,7 @@
-"""Модуль с утилитами для экспериментов."""
+"""Утилиты: эксперимент, типы, визуализация."""
 
-from src.utils.experiment import run_bbob_experiment, run_comprehensive_experiment
-from src.utils.types import OptimizationResult
+from src.utils import experiment
+from src.utils import types
+from src.utils import visualization
 
-__all__ = [
-    'run_bbob_experiment',
-    'run_comprehensive_experiment',
-    'OptimizationResult',
-]
+__all__ = ["experiment", "types", "visualization"]

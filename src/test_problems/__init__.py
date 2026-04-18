@@ -1,5 +1,5 @@
-"""Модуль планирования эксперимента."""
+"""Тестовые задачи оптимизации с ограничениями."""
 
-from src.experimental_design.lhs import latin_hypercube_sample
+from src.test_problems import constrained_problems
 
-__all__ = ['latin_hypercube_sample']
+__all__ = ["constrained_problems"]
