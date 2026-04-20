@@ -1,0 +1,150 @@
+====================================================================================================
+РЕЗУЛЬТАТЫ ЭКСПЕРИМЕНТА
+====================================================================================================
+
+Дата: 2026-04-18 17:23:32
+Размерности: [2, 3, 5]
+Всего запусков: 120
+
+Функция              Разм   Метод        Лучшее значение    Допустимо  Время(с)  
+----------------------------------------------------------------------------------------------------
+Sphere               2      Penalty      0.284505           Да         0.57      
+Sphere               2      Penalty      0.307693           Да         0.40      
+Sphere               2      Barrier      0.243755           Да         0.47      
+Sphere               2      Barrier      0.364411           Да         0.30      
+Sphere               2      Lagrange     0.137293           Да         0.62      
+Sphere               2      Lagrange     0.009228           Да         0.67      
+Sphere               2      CEI          0.034227           Да         0.31      
+Sphere               2      CEI          0.015157           Да         0.25      
+Sphere               3      Penalty      5.306082           Да         0.69      
+Sphere               3      Penalty      4.723474           Да         0.62      
+Sphere               3      Barrier      0.161729           Да         0.63      
+Sphere               3      Barrier      0.171496           Да         0.44      
+Sphere               3      Lagrange     0.990978           Да         0.84      
+Sphere               3      Lagrange     1.884580           Да         1.19      
+Sphere               3      CEI          0.021993           Да         0.47      
+Sphere               3      CEI          0.000816           Да         0.56      
+Sphere               5      Penalty      7.610742           Да         0.98      
+Sphere               5      Penalty      15.117715          Да         0.95      
+Sphere               5      Barrier      1.061309           Да         0.43      
+Sphere               5      Barrier      0.729961           Да         1.18      
+Sphere               5      Lagrange     4.979252           Да         1.36      
+Sphere               5      Lagrange     4.632542           Да         1.34      
+Sphere               5      CEI          0.025926           Да         0.85      
+Sphere               5      CEI          0.155908           Да         0.85      
+Rosenbrock           2      Penalty      0.341769           Да         0.62      
+Rosenbrock           2      Penalty      0.917282           Да         0.70      
+Rosenbrock           2      Barrier      1.956972           Да         0.33      
+Rosenbrock           2      Barrier      0.497603           Да         0.47      
+Rosenbrock           2      Lagrange     0.493688           Да         0.64      
+Rosenbrock           2      Lagrange     1.447677           Да         0.69      
+Rosenbrock           2      CEI          0.383742           Да         0.74      
+Rosenbrock           2      CEI          0.677922           Да         0.50      
+Rosenbrock           3      Penalty      1.897323           Да         0.95      
+Rosenbrock           3      Penalty      1.309609           Да         0.97      
+Rosenbrock           3      Barrier      2.711939           Да         0.61      
+Rosenbrock           3      Barrier      2.343990           Да         0.44      
+Rosenbrock           3      Lagrange     3.431709           Да         1.32      
+Rosenbrock           3      Lagrange     1.385991           Да         1.79      
+Rosenbrock           3      CEI          2.047792           Да         0.95      
+Rosenbrock           3      CEI          1.999518           Да         1.05      
+Rosenbrock           5      Penalty      13.010518          Да         2.52      
+Rosenbrock           5      Penalty      35.105975          Да         2.29      
+Rosenbrock           5      Barrier      73.139317          Да         0.06      
+Rosenbrock           5      Barrier      202.141833         Да         0.06      
+Rosenbrock           5      Lagrange     10.728281          Да         3.75      
+Rosenbrock           5      Lagrange     7.714093           Да         1.71      
+Rosenbrock           5      CEI          19.588618          Да         1.37      
+Rosenbrock           5      CEI          14.362318          Да         1.51      
+Ackley               2      Penalty      3.122854           Да         0.33      
+Ackley               2      Penalty      2.941179           Да         0.32      
+Ackley               2      Barrier      3.121558           Да         0.03      
+Ackley               2      Barrier      3.350490           Да         0.03      
+Ackley               2      Lagrange     3.744405           Да         0.74      
+Ackley               2      Lagrange     4.098953           Да         0.51      
+Ackley               2      CEI          0.076444           Да         0.34      
+Ackley               2      CEI          0.541867           Да         0.21      
+Ackley               3      Penalty      3.036603           Да         0.26      
+Ackley               3      Penalty      2.963151           Да         0.40      
+Ackley               3      Barrier      4.769311           Да         0.04      
+Ackley               3      Barrier      4.363798           Да         0.04      
+Ackley               3      Lagrange     4.037813           Да         0.75      
+Ackley               3      Lagrange     5.142826           Да         0.36      
+Ackley               3      CEI          1.608489           Да         0.32      
+Ackley               3      CEI          0.530125           Да         0.39      
+Ackley               5      Penalty      5.731384           Нет        0.32      
+Ackley               5      Penalty      7.221203           Нет        0.34      
+Ackley               5      Barrier      10.725781          Нет        0.04      
+Ackley               5      Barrier      10.300676          Нет        0.04      
+Ackley               5      Lagrange     2.555046           Да         0.40      
+Ackley               5      Lagrange     7.293258           Нет        0.34      
+Ackley               5      CEI          6.150932           Нет        0.29      
+Ackley               5      CEI          3.538431           Да         0.33      
+Rastrigin            2      Penalty      11.762720          Да         0.49      
+Rastrigin            2      Penalty      13.619919          Да         0.43      
+Rastrigin            2      Barrier      1.865811           Да         1.04      
+Rastrigin            2      Barrier      5.510763           Да         1.06      
+Rastrigin            2      Lagrange     5.054355           Да         0.62      
+Rastrigin            2      Lagrange     10.641336          Да         0.91      
+Rastrigin            2      CEI          4.937871           Да         0.65      
+Rastrigin            2      CEI          18.132949          Да         0.45      
+Rastrigin            3      Penalty      22.352304          Да         0.56      
+Rastrigin            3      Penalty      29.138685          Да         0.61      
+Rastrigin            3      Barrier      16.001122          Да         0.97      
+Rastrigin            3      Barrier      31.040425          Да         0.30      
+Rastrigin            3      Lagrange     5.814558           Да         0.84      
+Rastrigin            3      Lagrange     18.962712          Да         1.01      
+Rastrigin            3      CEI          16.885076          Да         0.82      
+Rastrigin            3      CEI          7.206174           Да         0.90      
+Rastrigin            5      Penalty      39.391971          Да         0.96      
+Rastrigin            5      Penalty      49.240386          Да         1.02      
+Rastrigin            5      Barrier      43.927714          Да         0.38      
+Rastrigin            5      Barrier      39.440074          Да         0.73      
+Rastrigin            5      Lagrange     52.086402          Да         1.47      
+Rastrigin            5      Lagrange     35.734084          Да         1.27      
+Rastrigin            5      CEI          26.765720          Да         1.41      
+Rastrigin            5      CEI          27.813808          Да         1.78      
+Michalewicz          2      Penalty      -0.926491          Да         0.58      
+Michalewicz          2      Penalty      -1.001117          Да         0.46      
+Michalewicz          2      Barrier      -0.799508          Да         0.52      
+Michalewicz          2      Barrier      -1.088514          Да         0.59      
+Michalewicz          2      Lagrange     -0.798626          Да         0.46      
+Michalewicz          2      Lagrange     -1.634731          Да         0.53      
+Michalewicz          2      CEI          -1.462707          Да         0.67      
+Michalewicz          2      CEI          -0.980038          Да         0.60      
+Michalewicz          3      Penalty      -1.699189          Да         0.52      
+Michalewicz          3      Penalty      -0.974629          Да         0.76      
+Michalewicz          3      Barrier      -1.200063          Да         0.74      
+Michalewicz          3      Barrier      -0.932535          Да         0.55      
+Michalewicz          3      Lagrange     -1.422636          Да         0.95      
+Michalewicz          3      Lagrange     -1.619740          Да         1.20      
+Michalewicz          3      CEI          -1.880047          Да         1.11      
+Michalewicz          3      CEI          -0.956404          Да         0.57      
+Michalewicz          5      Penalty      -1.972420          Да         1.38      
+Michalewicz          5      Penalty      -1.615799          Да         1.14      
+Michalewicz          5      Barrier      -1.744225          Да         1.18      
+Michalewicz          5      Barrier      -1.679371          Да         0.96      
+Michalewicz          5      Lagrange     -1.297279          Да         1.61      
+Michalewicz          5      Lagrange     -1.724311          Да         1.24      
+Michalewicz          5      CEI          -2.389038          Да         0.34      
+Michalewicz          5      CEI          -2.211662          Да         1.81      
+
+====================================================================================================
+СТАТИСТИКА ПО МЕТОДАМ
+----------------------------------------------------------------------------------------------------
+
+Barrier:
+  Запусков: 30, допустимых: 28
+  Среднее: 15.409685, медиана: 1.911391, лучшее: -1.744225
+
+CEI:
+  Запусков: 30, допустимых: 29
+  Среднее: 4.740379, медиана: 0.530125, лучшее: -2.389038
+
+Lagrange:
+  Запусков: 30, допустимых: 29
+  Среднее: 6.110706, медиана: 3.431709, лучшее: -1.724311
+
+Penalty:
+  Запусков: 30, допустимых: 28
+  Среднее: 9.118315, медиана: 2.999877, лучшее: -1.972420
