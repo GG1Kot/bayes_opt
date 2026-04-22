@@ -107,6 +107,54 @@ def michalewicz_objective(x: np.ndarray) -> float:
         for i in range(n)
     ))
 
+def miura_ori_geometry(a: float, b: float, alpha_deg: float) -> tuple[float, float, float]:
+    """
+    Вычисляет геометрические характеристики ячейки Миура-Ори.
+    
+    Аргументы:
+        a: длина стороны a (мм)
+        b: длина стороны b (мм)
+        alpha_deg: секторный угол (градусы)
+    
+    Возвращает:
+        folded_volume: сложенный объём (отн. ед.)
+        stiffness: жёсткость (отн. ед.)
+        poisson_ratio: коэффициент Пуассона
+    """
+    alpha_rad = np.radians(alpha_deg)
+    
+    # Сложенный объём (минимизируем)
+    folded_volume = np.cos(alpha_rad)
+    
+    # Жёсткость (максимизируем)
+    stiffness = np.sin(2 * alpha_rad) * (a + b) / (a * b + 1e-6)
+    
+    # Коэффициент Пуассона (должен быть отрицательным)
+    poisson_ratio = -np.tan(alpha_rad) ** 2
+    
+    return folded_volume, stiffness, poisson_ratio
+
+def miura(x: np.ndarray) -> float:
+    """
+    Целевая функция для оптимизации геометрии Миура-Ори.
+    
+    Минимизируем сложенный объём.
+    
+    Аргументы:
+        x: вектор переменных [a, b, alpha]
+    
+    Возвращает:
+        значение целевой функции (сложенный объём)
+    """
+    a, b, alpha = x[0], x[1], x[2]
+    
+    # Физическая проверка (минимальные границы)
+    if a <= 0 or b <= 0 or alpha <= 0 or alpha >= 90:
+        return 1e10  # Огромный штраф за невалидные параметры
+    
+    folded_volume, stiffness, _ = miura_ori_geometry(a, b, alpha)
+    
+    return folded_volume/stiffness
 
 # ---------------------------------------------------------------------------
 # Функции ограничений: g(x) <= 0 означает допустимость
@@ -137,6 +185,39 @@ def _michalewicz_constraint(x: np.ndarray) -> float:
     """Ограничение Михалевича: sum(x) <= 0.6*n*pi (активное на 40% области)."""
     return float(np.sum(x) - 0.6 * len(x) * np.pi)
 
+def _miura_constraint_stiffness(x: np.ndarray) -> float:
+    """
+    Ограничение для геометрии Миура-Ори.
+    
+    Возвращает значение <= 0 для допустимых точек.
+    
+    Аргументы:
+        x: вектор переменных [a, b, alpha]
+    
+    Возвращает:
+        значение ограничения (должно быть <= 0 для допустимости)
+    """
+    a, b, alpha = x[0], x[1], x[2]
+    
+    # Вычисляем характеристики
+    _, stiffness,_ = miura_ori_geometry(a, b, alpha)
+    
+    # Ограничение 1: Жёсткость должна быть >= 0.5
+    # Возвращаем 0.5 - stiffness (должно быть <= 0)
+    return float(0.5 - stiffness)
+def _miura_constraint_stiffness_poisson_ratio(x: np.ndarray) -> float:
+    a, b, alpha = x[0], x[1], x[2]
+    
+    # Вычисляем характеристики
+    _, _,poisson_ratio = miura_ori_geometry(a, b, alpha)
+    # Ограничение 2: Коэффициент Пуассона должен быть < 0
+    # Возвращаем poisson_ratio (должно быть <= 0)
+    return poisson_ratio  # poisson_ratio уже отрицательный в норме
+def _miura_constraint_stiffness_aspect_ratio(x: np.ndarray) -> float:
+    a, b = x[0], x[1]
+    # Ограничение 3: Пропорции (a/b не слишком экстремальные)
+    aspect_ratio = a / b
+    return max(0.1 - aspect_ratio, aspect_ratio - 10.0)  # 0.1 <= a/b <= 10
 
 # ---------------------------------------------------------------------------
 # Вспомогательные функции
@@ -160,6 +241,7 @@ def get_problem_bounds(name: str, dimension: int) -> np.ndarray:
         "ackley":      np.array([[-5.0, 5.0]] * dimension),
         "rastrigin":   np.array([[-5.0, 5.0]] * dimension),
         "michalewicz": np.array([[0.0, np.pi]] * dimension),
+        "miura":       np.array([[1.0, 10.0],[1.0, 10.0],[0.0, 90.0]]),
     }
     return bounds_map.get(name.lower(), np.array([[-5.0, 5.0]] * dimension))
 
@@ -187,18 +269,29 @@ def get_test_problems(dimensions: list[int]) -> list[dict[str, Any]]:
         ("Ackley",      ackley_objective,     [_ackley_constraint]),
         ("Rastrigin",   rastrigin_objective,  [_rastrigin_constraint]),
         ("Michalewicz", michalewicz_objective, [_michalewicz_constraint]),
+        ("miura",       miura, [_miura_constraint_stiffness, _miura_constraint_stiffness_poisson_ratio, _miura_constraint_stiffness_aspect_ratio]),
     ]
 
     result: list[dict[str, Any]] = []
     for name, objective, constraints in problems_config:
-        for dim in dimensions:
-            bounds = get_problem_bounds(name.lower(), dim)
+        if name=="miura":
+            bounds = get_problem_bounds(name.lower(), 3)
             result.append({
                 "name": name,
                 "function": objective,
                 "constraints": constraints,
-                "dimension": dim,
+                "dimension": 3,
                 "bounds": bounds,
             })
+        else:
+            for dim in dimensions:
+                bounds = get_problem_bounds(name.lower(), dim)
+                result.append({
+                    "name": name,
+                    "function": objective,
+                    "constraints": constraints,
+                    "dimension": dim,
+                    "bounds": bounds,
+                })
 
     return result
