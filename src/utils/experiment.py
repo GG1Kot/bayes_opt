@@ -55,6 +55,7 @@ def run_standard_experiment(
     n_runs: int = 3,
     n_iterations: int = 30,
     n_initial_points_factor: int = 5,
+    save_all_points: bool = True,
 ) -> dict[str, Any]:
     """
     Эксперимент на 5 стандартных тестовых задачах с ограничениями.
@@ -114,7 +115,18 @@ def run_standard_experiment(
                     best_value, best_point, history = optimizer.optimize(n_iterations)
                     wall_time = time.monotonic() - start
                     is_feasible = bool(handler.is_feasible(best_point.reshape(1, -1))[0])
-
+                    all_points = []
+                    all_values = []
+                    all_constraints = []
+                    if save_all_points and hasattr(optimizer, 'X_sample'):
+                        # Если в optimizer хранятся все точки
+                        all_points = optimizer.X_sample.tolist()
+                        all_values = optimizer.Y_sample.tolist() if hasattr(optimizer, 'Y_sample') else []
+                    
+                    # Альтернатива: если история точек доступна через атрибут
+                    elif hasattr(optimizer, 'history_points'):
+                        all_points = optimizer.history_points
+                        all_values = history
                     all_results.append(types.OptimizationResult(
                         function_name=problem_name,
                         dimension=dim,
@@ -125,6 +137,8 @@ def run_standard_experiment(
                         n_iterations=n_iterations,
                         n_initial_points=n_initial,
                         history_values=history,
+                        history_points=all_points,
+                        history_constraints=all_constraints,
                         wall_time=wall_time,
                         converged=len(history) == n_iterations + 1,
                     ))
@@ -133,9 +147,13 @@ def run_standard_experiment(
 
                 except Exception as exc:  # pylint: disable=broad-except
                     print(f"    [{run_id+1}/{n_runs}] Ошибка: {exc}")
+                
 
-    if all_results:
-        _save_results(all_results, dimensions)
+    # if all_results:
+    #     _save_results(all_results, dimensions)
+    #     # Обновлённое сохранение с точками
+    if all_results and save_all_points:
+        _save_results_with_points(all_results, dimensions)
 
     return {"results": all_results, "n_total": len(all_results)}
 
@@ -222,3 +240,42 @@ def _save_results(
                         f"лучшее: {np.min(values):.6f}\n")
 
     print(f"\nРезультаты сохранены в {filename}")
+
+def _save_results_with_points(
+    results: list[types.OptimizationResult],
+    dimensions: list[int],
+) -> None:
+    """
+    Сохранение результатов с полной историей точек.
+    """
+    import json
+    import pickle
+    
+    Path("results").mkdir(exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # 1. Текстовый отчёт (как раньше)
+    _save_results(results, dimensions)
+    
+    # 2. JSON для машинного чтения (без больших массивов)
+    json_data = [r.to_dict(include_history=False) for r in results]
+    with open(f"results/summary_{timestamp}.json", "w", encoding="utf-8") as f:
+        json.dump(json_data, f, indent=2, ensure_ascii=False)
+    
+    # 3. NPZ со всеми точками (компактное бинарное хранение)
+    points_data = {}
+    for i, r in enumerate(results):
+        if r.history_points:
+            key = f"{r.function_name}_dim{r.dimension}_{r.method_name}_{i}"
+            points_data[f"{key}_points"] = r.get_all_points_array()
+            points_data[f"{key}_values"] = r.get_all_values_array()
+            points_data[f"{key}_feasible"] = r.get_feasible_mask()
+    
+    if points_data:
+        np.savez_compressed(f"results/points_{timestamp}.npz", **points_data)
+        print(f"✅ Точки сохранены: results/points_{timestamp}.npz")
+    
+    # 4. Pickle для полного восстановления (опционально)
+    with open(f"results/full_results_{timestamp}.pkl", "wb") as f:
+        pickle.dump(results, f)
+    print(f"✅ Полные результаты: results/full_results_{timestamp}.pkl")

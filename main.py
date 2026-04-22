@@ -57,7 +57,7 @@ def main() -> None:
         prob_results = [r for r in all_results if r.function_name == problem]
         visualization.plot_convergence_by_dimension(
             prob_results,
-            dimensions=DIMENSIONS,
+            dimensions=[3] if problem=="miura" else DIMENSIONS,
             problem_name=problem,
         )
 
